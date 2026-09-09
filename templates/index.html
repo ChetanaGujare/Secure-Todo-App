@@ -1,0 +1,890 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>✨ Todo · Secure</title>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet" />
+
+    <!-- Font Awesome 6 (free) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+
+    <style>
+        /* ── reset & base ── */
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: radial-gradient(ellipse at 20% 50%, #0b1120 0%, #030712 100%);
+            color: #e8edf5;
+            padding: 1.5rem;
+            margin: 0;
+        }
+
+        /* ── glass card ── */
+        .app-container {
+            width: 100%;
+            max-width: 540px;
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(18px) saturate(1.4);
+            -webkit-backdrop-filter: blur(18px) saturate(1.4);
+            border-radius: 2.5rem;
+            padding: 2.2rem 2rem 2.8rem;
+            box-shadow:
+                0 30px 60px -20px rgba(0, 0, 0, 0.8),
+                inset 0 1px 0 rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            transition: all 0.3s ease;
+        }
+
+        /* ── header ── */
+        .app-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 2rem;
+        }
+
+        .app-header h1 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            background: linear-gradient(135deg, #f0f4ff 0%, #94a3b8 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .app-header .badge {
+            font-size: 0.7rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            padding: 0.3rem 0.9rem;
+            border-radius: 100px;
+            background: rgba(99, 102, 241, 0.25);
+            color: #a5b4fc;
+            border: 1px solid rgba(99, 102, 241, 0.2);
+        }
+
+        /* ── auth forms ── */
+        .auth-section {
+            margin-bottom: 1.8rem;
+        }
+
+        .auth-tabs {
+            display: flex;
+            gap: 0.5rem;
+            background: rgba(255, 255, 255, 0.04);
+            border-radius: 1.2rem;
+            padding: 0.35rem;
+            margin-bottom: 1.8rem;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .auth-tab {
+            flex: 1;
+            padding: 0.6rem 0;
+            border: none;
+            border-radius: 1rem;
+            background: transparent;
+            color: #94a3b8;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            font-family: inherit;
+        }
+
+        .auth-tab.active {
+            background: rgba(99, 102, 241, 0.25);
+            color: #e8edf5;
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.15);
+        }
+
+        .auth-tab:hover:not(.active) {
+            color: #cbd5e1;
+        }
+
+        .auth-form {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            animation: fadeSlide 0.35s ease;
+        }
+
+        .auth-form.hidden {
+            display: none;
+        }
+
+        .auth-form input {
+            padding: 0.9rem 1.2rem;
+            border-radius: 1.2rem;
+            border: 1px solid rgba(255, 255, 255, 0.07);
+            background: rgba(255, 255, 255, 0.04);
+            color: #e8edf5;
+            font-size: 0.95rem;
+            font-family: inherit;
+            transition: border 0.2s, box-shadow 0.2s;
+            outline: none;
+        }
+
+        .auth-form input::placeholder {
+            color: #64748b;
+        }
+
+        .auth-form input:focus {
+            border-color: rgba(99, 102, 241, 0.5);
+            box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.12);
+        }
+
+        .auth-form .btn-primary {
+            padding: 0.9rem;
+            border: none;
+            border-radius: 1.2rem;
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            color: #fff;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.15s, box-shadow 0.25s;
+            font-family: inherit;
+            letter-spacing: 0.01em;
+        }
+
+        .auth-form .btn-primary:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 12px 28px -8px rgba(99, 102, 241, 0.4);
+        }
+
+        .auth-form .btn-primary:active {
+            transform: scale(0.97);
+        }
+
+        .auth-error {
+            color: #f87171;
+            font-size: 0.8rem;
+            font-weight: 500;
+            padding: 0.3rem 0.8rem;
+            border-radius: 0.8rem;
+            background: rgba(248, 113, 113, 0.08);
+            border: 1px solid rgba(248, 113, 113, 0.12);
+            display: none;
+        }
+
+        .auth-error.visible {
+            display: block;
+        }
+
+        /* ── todo section (protected) ── */
+        .todo-section {
+            display: none;
+            animation: fadeSlide 0.4s ease;
+        }
+
+        .todo-section.visible {
+            display: block;
+        }
+
+        .todo-top {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1.5rem;
+        }
+
+        .todo-top .user-greeting {
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: #94a3b8;
+        }
+
+        .todo-top .user-greeting span {
+            color: #e8edf5;
+            font-weight: 600;
+        }
+
+        .btn-logout {
+            padding: 0.4rem 1.2rem;
+            border: none;
+            border-radius: 2rem;
+            background: rgba(239, 68, 68, 0.15);
+            color: #f87171;
+            font-size: 0.75rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-family: inherit;
+            border: 1px solid rgba(239, 68, 68, 0.1);
+        }
+
+        .btn-logout:hover {
+            background: rgba(239, 68, 68, 0.25);
+            transform: scale(1.02);
+        }
+
+        /* add todo */
+        .todo-add {
+            display: flex;
+            gap: 0.6rem;
+            margin-bottom: 2rem;
+        }
+
+        .todo-add input {
+            flex: 1;
+            padding: 0.8rem 1.2rem;
+            border-radius: 1.2rem;
+            border: 1px solid rgba(255, 255, 255, 0.07);
+            background: rgba(255, 255, 255, 0.04);
+            color: #e8edf5;
+            font-size: 0.9rem;
+            font-family: inherit;
+            outline: none;
+            transition: border 0.2s, box-shadow 0.2s;
+        }
+
+        .todo-add input::placeholder {
+            color: #64748b;
+        }
+
+        .todo-add input:focus {
+            border-color: rgba(99, 102, 241, 0.5);
+            box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1);
+        }
+
+        .todo-add .btn-add {
+            padding: 0.8rem 1.6rem;
+            border: none;
+            border-radius: 1.2rem;
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            color: #fff;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.15s, box-shadow 0.25s;
+            font-family: inherit;
+            white-space: nowrap;
+        }
+
+        .todo-add .btn-add:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 12px 28px -8px rgba(99, 102, 241, 0.35);
+        }
+
+        .todo-add .btn-add:active {
+            transform: scale(0.96);
+        }
+
+        /* todo list */
+        .todo-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.6rem;
+            max-height: 340px;
+            overflow-y: auto;
+            padding-right: 0.2rem;
+        }
+
+        .todo-list::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        .todo-list::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 8px;
+        }
+
+        .todo-list::-webkit-scrollbar-thumb {
+            background: rgba(99, 102, 241, 0.3);
+            border-radius: 8px;
+        }
+
+        .todo-item {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            padding: 0.7rem 1rem 0.7rem 1.2rem;
+            border-radius: 1.2rem;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.04);
+            transition: all 0.25s ease;
+            animation: slideUp 0.3s ease;
+        }
+
+        .todo-item:hover {
+            background: rgba(255, 255, 255, 0.07);
+            border-color: rgba(255, 255, 255, 0.06);
+        }
+
+        .todo-item .todo-check {
+            width: 1.3rem;
+            height: 1.3rem;
+            border-radius: 50%;
+            border: 2px solid rgba(255, 255, 255, 0.15);
+            background: transparent;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+            flex-shrink: 0;
+            color: transparent;
+            font-size: 0.7rem;
+        }
+
+        .todo-item .todo-check:hover {
+            border-color: rgba(99, 102, 241, 0.5);
+        }
+
+        .todo-item .todo-check.done {
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            border-color: #6366f1;
+            color: #fff;
+        }
+
+        .todo-item .todo-text {
+            flex: 1;
+            font-size: 0.92rem;
+            font-weight: 500;
+            color: #e8edf5;
+            word-break: break-word;
+            transition: color 0.2s;
+        }
+
+        .todo-item .todo-text.done {
+            color: #64748b;
+            text-decoration: line-through;
+        }
+
+        .todo-item .todo-delete {
+            background: none;
+            border: none;
+            color: #64748b;
+            font-size: 0.9rem;
+            cursor: pointer;
+            padding: 0.3rem 0.5rem;
+            border-radius: 0.8rem;
+            transition: all 0.2s;
+            font-family: inherit;
+        }
+
+        .todo-item .todo-delete:hover {
+            color: #f87171;
+            background: rgba(239, 68, 68, 0.08);
+        }
+
+        .todo-empty {
+            text-align: center;
+            color: #64748b;
+            font-size: 0.9rem;
+            padding: 2.5rem 0 1.5rem;
+            font-weight: 500;
+            letter-spacing: 0.01em;
+        }
+
+        .todo-empty i {
+            display: block;
+            font-size: 2rem;
+            margin-bottom: 0.8rem;
+            opacity: 0.4;
+        }
+
+        /* ── animations ── */
+        @keyframes fadeSlide {
+            0% {
+                opacity: 0;
+                transform: translateY(12px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes slideUp {
+            0% {
+                opacity: 0;
+                transform: translateY(14px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* ── responsive ── */
+        @media (max-width: 480px) {
+            .app-container {
+                padding: 1.5rem 1.2rem 2rem;
+                border-radius: 1.8rem;
+            }
+
+            .app-header h1 {
+                font-size: 1.4rem;
+            }
+
+            .todo-add {
+                flex-direction: column;
+            }
+
+            .todo-add .btn-add {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .auth-tab {
+                font-size: 0.8rem;
+            }
+        }
+
+        /* toast notification */
+        .toast {
+            position: fixed;
+            bottom: 2rem;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            padding: 0.8rem 1.8rem;
+            border-radius: 1.2rem;
+            background: rgba(30, 41, 59, 0.92);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            color: #e8edf5;
+            font-size: 0.85rem;
+            font-weight: 500;
+            box-shadow: 0 20px 40px -12px rgba(0, 0, 0, 0.6);
+            transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+            opacity: 0;
+            pointer-events: none;
+            z-index: 999;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .toast.show {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+
+        .toast.error {
+            border-color: rgba(248, 113, 113, 0.25);
+            background: rgba(127, 29, 29, 0.85);
+        }
+
+        .toast.success {
+            border-color: rgba(74, 222, 128, 0.2);
+            background: rgba(20, 83, 45, 0.85);
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="app-container" id="app">
+
+        <!-- header -->
+        <div class="app-header">
+            <h1><i class="fas fa-list-check" style="font-size:1.2rem; margin-right:0.4rem; opacity:0.7;"></i> Todo</h1>
+            <span class="badge"><i class="fas fa-lock" style="margin-right:0.3rem;"></i> secure</span>
+        </div>
+
+        <!-- ─── AUTH SECTION ─── -->
+        <div class="auth-section" id="authSection">
+
+            <!-- tabs -->
+            <div class="auth-tabs">
+                <button class="auth-tab active" data-tab="login">Log In</button>
+                <button class="auth-tab" data-tab="register">Register</button>
+            </div>
+
+            <!-- login form -->
+            <form class="auth-form" id="loginForm" autocomplete="off">
+                <input type="text" id="loginUsername" placeholder="Username" required />
+                <input type="password" id="loginPassword" placeholder="Password" required />
+                <div class="auth-error" id="loginError"></div>
+                <button type="submit" class="btn-primary">Log In <i class="fas fa-arrow-right" style="margin-left:0.4rem;"></i></button>
+            </form>
+
+            <!-- register form -->
+            <form class="auth-form hidden" id="registerForm" autocomplete="off">
+                <input type="text" id="registerUsername" placeholder="Choose a username" required />
+                <input type="password" id="registerPassword" placeholder="Create a password" required />
+                <div class="auth-error" id="registerError"></div>
+                <button type="submit" class="btn-primary">Create Account <i class="fas fa-user-plus" style="margin-left:0.4rem;"></i></button>
+            </form>
+        </div>
+
+        <!-- ─── TODO SECTION (protected) ─── -->
+        <div class="todo-section" id="todoSection">
+
+            <div class="todo-top">
+                <div class="user-greeting">👋 Hey, <span id="greetingUser">User</span></div>
+                <button class="btn-logout" id="logoutBtn"><i class="fas fa-sign-out-alt" style="margin-right:0.3rem;"></i> Logout</button>
+            </div>
+
+            <!-- add todo -->
+            <div class="todo-add">
+                <input type="text" id="todoInput" placeholder="What do you need to do?" maxlength="200" />
+                <button class="btn-add" id="addBtn"><i class="fas fa-plus" style="margin-right:0.4rem;"></i> Add</button>
+            </div>
+
+            <!-- todo list -->
+            <div class="todo-list" id="todoList">
+                <!-- dynamically rendered -->
+                <div class="todo-empty">
+                    <i class="fas fa-inbox"></i>
+                    Nothing yet — add a task above.
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- toast -->
+    <div class="toast" id="toast"></div>
+
+    <script>
+        // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+        //  STATE
+        // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+        const state = {
+            authenticated: false,
+            username: '',
+            todos: [],
+        };
+
+        // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+        //  DOM refs
+        // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+        const $ = (sel) => document.querySelector(sel);
+        const $$ = (sel) => document.querySelectorAll(sel);
+
+        const authSection = $('#authSection');
+        const todoSection = $('#todoSection');
+        const loginForm = $('#loginForm');
+        const registerForm = $('#registerForm');
+        const loginError = $('#loginError');
+        const registerError = $('#registerError');
+        const loginUsername = $('#loginUsername');
+        const loginPassword = $('#loginPassword');
+        const registerUsername = $('#registerUsername');
+        const registerPassword = $('#registerPassword');
+        const todoInput = $('#todoInput');
+        const addBtn = $('#addBtn');
+        const todoList = $('#todoList');
+        const greetingUser = $('#greetingUser');
+        const logoutBtn = $('#logoutBtn');
+        const toast = $('#toast');
+        const tabs = $$('.auth-tab');
+
+        // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+        //  TOAST
+        // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+        let toastTimeout;
+
+        function showToast(message, type = 'success') {
+            clearTimeout(toastTimeout);
+            toast.textContent = message;
+            toast.className = 'toast ' + type;
+            // force reflow
+            void toast.offsetWidth;
+            toast.classList.add('show');
+            toastTimeout = setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+
+        // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+        //  AUTH TAB SWITCH
+        // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+        tabs.forEach((tab) => {
+            tab.addEventListener('click', () => {
+                tabs.forEach((t) => t.classList.remove('active'));
+                tab.classList.add('active');
+                const target = tab.dataset.tab;
+                if (target === 'login') {
+                    loginForm.classList.remove('hidden');
+                    registerForm.classList.add('hidden');
+                    loginError.classList.remove('visible');
+                } else {
+                    registerForm.classList.remove('hidden');
+                    loginForm.classList.add('hidden');
+                    registerError.classList.remove('visible');
+                }
+            });
+        });
+
+        // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+        //  API HELPERS
+        // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+        async function apiFetch(endpoint, options = {}) {
+            const res = await fetch(endpoint, {
+                ...options,
+                headers: {
+                    'Content-Type': 'application/json',
+                    ...(options.headers || {}),
+                },
+                credentials: 'include', // important for session cookies
+            });
+            const data = await res.json();
+            if (!res.ok) {
+                throw new Error(data.error || 'Something went wrong');
+            }
+            return data;
+        }
+
+        // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+        //  AUTH
+        // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+        async function handleLogin(e) {
+            e.preventDefault();
+            loginError.classList.remove('visible');
+            const username = loginUsername.value.trim();
+            const password = loginPassword.value.trim();
+            if (!username || !password) {
+                loginError.textContent = 'Please fill in all fields.';
+                loginError.classList.add('visible');
+                return;
+            }
+            try {
+                const data = await apiFetch('/api/login', {
+                    method: 'POST',
+                    body: JSON.stringify({ username, password }),
+                });
+                state.authenticated = true;
+                state.username = data.username;
+                showToast('Welcome back, ' + state.username + '!', 'success');
+                renderAuthState();
+                await loadTodos();
+            } catch (err) {
+                loginError.textContent = err.message;
+                loginError.classList.add('visible');
+            }
+        }
+
+        async function handleRegister(e) {
+            e.preventDefault();
+            registerError.classList.remove('visible');
+            const username = registerUsername.value.trim();
+            const password = registerPassword.value.trim();
+            if (!username || !password) {
+                registerError.textContent = 'Please fill in all fields.';
+                registerError.classList.add('visible');
+                return;
+            }
+            if (username.length < 3) {
+                registerError.textContent = 'Username must be at least 3 characters.';
+                registerError.classList.add('visible');
+                return;
+            }
+            if (password.length < 4) {
+                registerError.textContent = 'Password must be at least 4 characters.';
+                registerError.classList.add('visible');
+                return;
+            }
+            try {
+                await apiFetch('/api/register', {
+                    method: 'POST',
+                    body: JSON.stringify({ username, password }),
+                });
+                showToast('Account created! Please log in.', 'success');
+                // switch to login tab
+                tabs.forEach((t) => t.classList.remove('active'));
+                document.querySelector('.auth-tab[data-tab="login"]').classList.add('active');
+                loginForm.classList.remove('hidden');
+                registerForm.classList.add('hidden');
+                registerUsername.value = '';
+                registerPassword.value = '';
+                loginUsername.value = username;
+                loginPassword.value = '';
+                registerError.classList.remove('visible');
+            } catch (err) {
+                registerError.textContent = err.message;
+                registerError.classList.add('visible');
+            }
+        }
+
+        async function handleLogout() {
+            try {
+                await apiFetch('/api/logout', { method: 'POST' });
+                state.authenticated = false;
+                state.username = '';
+                state.todos = [];
+                showToast('Logged out.', 'success');
+                renderAuthState();
+            } catch (err) {
+                showToast('Logout failed: ' + err.message, 'error');
+            }
+        }
+
+        // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+        //  TODOS
+        // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+        async function loadTodos() {
+            try {
+                const data = await apiFetch('/api/todos');
+                state.todos = data.todos || [];
+                renderTodos();
+            } catch (err) {
+                showToast('Failed to load todos: ' + err.message, 'error');
+            }
+        }
+
+        async function addTodo() {
+            const text = todoInput.value.trim();
+            if (!text) {
+                showToast('Please enter a task.', 'error');
+                return;
+            }
+            try {
+                const data = await apiFetch('/api/todos', {
+                    method: 'POST',
+                    body: JSON.stringify({ text }),
+                });
+                state.todos = data.todos || [];
+                renderTodos();
+                todoInput.value = '';
+                todoInput.focus();
+                showToast('Task added!', 'success');
+            } catch (err) {
+                showToast('Failed to add task: ' + err.message, 'error');
+            }
+        }
+
+        async function toggleTodo(id) {
+            try {
+                const data = await apiFetch(`/api/todos/${id}/toggle`, {
+                    method: 'PATCH',
+                });
+                state.todos = data.todos || [];
+                renderTodos();
+            } catch (err) {
+                showToast('Failed to update task: ' + err.message, 'error');
+            }
+        }
+
+        async function deleteTodo(id) {
+            try {
+                const data = await apiFetch(`/api/todos/${id}`, {
+                    method: 'DELETE',
+                });
+                state.todos = data.todos || [];
+                renderTodos();
+                showToast('Task deleted.', 'success');
+            } catch (err) {
+                showToast('Failed to delete task: ' + err.message, 'error');
+            }
+        }
+
+        // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+        //  RENDER
+        // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+        function renderAuthState() {
+            if (state.authenticated) {
+                authSection.style.display = 'none';
+                todoSection.classList.add('visible');
+                greetingUser.textContent = state.username;
+            } else {
+                authSection.style.display = 'block';
+                todoSection.classList.remove('visible');
+            }
+        }
+
+        function renderTodos() {
+            if (!state.todos.length) {
+                todoList.innerHTML = `
+                    <div class="todo-empty">
+                        <i class="fas fa-inbox"></i>
+                        Nothing yet — add a task above.
+                    </div>
+                `;
+                return;
+            }
+            let html = '';
+            state.todos.forEach((todo) => {
+                const doneClass = todo.done ? 'done' : '';
+                const textClass = todo.done ? 'done' : '';
+                const checkIcon = todo.done ? 'fa-check' : '';
+                html += `
+                    <div class="todo-item" data-id="${todo.id}">
+                        <button class="todo-check ${doneClass}" data-action="toggle" data-id="${todo.id}">
+                            ${todo.done ? '<i class="fas fa-check"></i>' : ''}
+                        </button>
+                        <span class="todo-text ${textClass}">${escapeHtml(todo.text)}</span>
+                        <button class="todo-delete" data-action="delete" data-id="${todo.id}">
+                            <i class="fas fa-trash-alt"></i>
+                        </button>
+                    </div>
+                `;
+            });
+            todoList.innerHTML = html;
+
+            // event listeners via delegation
+            todoList.querySelectorAll('[data-action="toggle"]').forEach((btn) => {
+                btn.addEventListener('click', () => {
+                    const id = parseInt(btn.dataset.id);
+                    toggleTodo(id);
+                });
+            });
+            todoList.querySelectorAll('[data-action="delete"]').forEach((btn) => {
+                btn.addEventListener('click', () => {
+                    const id = parseInt(btn.dataset.id);
+                    deleteTodo(id);
+                });
+            });
+        }
+
+        // simple escape
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+        //  CHECK AUTH ON LOAD
+        // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+        async function checkAuth() {
+            try {
+                const data = await apiFetch('/api/me');
+                state.authenticated = true;
+                state.username = data.username;
+                renderAuthState();
+                await loadTodos();
+            } catch (_) {
+                state.authenticated = false;
+                renderAuthState();
+            }
+        }
+
+        // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+        //  EVENT BINDING
+        // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+        loginForm.addEventListener('submit', handleLogin);
+        registerForm.addEventListener('submit', handleRegister);
+        logoutBtn.addEventListener('click', handleLogout);
+        addBtn.addEventListener('click', addTodo);
+        todoInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') addTodo();
+        });
+
+        // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+        //  BOOT
+        // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+        checkAuth();
+    </script>
+
+</body>
+</html>
